@@ -9,7 +9,7 @@ function [tcost, sequence, depth, space] = DFS(initial_node,goal_node)
     while index > 0
         % fetch the first node in the open_queue as current node
         curr_node = open_stack(index,1);
-%         index = index - 1;
+        index = index - 1;
         % display for the number of how many node generated
         disp(['Node Generated: ',int2str(tc)]);
         
