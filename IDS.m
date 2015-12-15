@@ -1,55 +1,90 @@
-function [visited, sequence] = IDS(initial_node,matrix_goal,d)
-    % List storing every unanalysed node
-    list = initial_node;
-    list_index = 1;
+function [tcost, sequence, depth, space] = IDS(initial_node,goal_node,limit)
+    tic %start timer
+    index = 1;
+    tc = 0;
+    % put the initial node into the queue
+    open_stack(index,1) = initial_node;
     
-    visited = [];
-    while list_index > 0
-        % analyse the last node from the list
-        curr_node = list(list_index);
-        list_index = list_index - 1;
+    % while the open_stack is not empty, keep looping
+    while index > 0
+        % fetch the first node in the open_queue as current node
+        curr_node = open_stack(index,1);
+        index = index - 1;
+        % display for the number of how many node generated
+        disp(['Node Generated: ',int2str(tc)]);
         
-        % put the node into visited list
-        [n ,~] = size(visited);
-        visited((n + 1),:) = getArray(curr_node);
-        
-        % check if it reach the goal state
-        if(min(min(curr_node.state == matrix_goal)))
+        % if the node state reach the goal state 
+        if(~testDiff(curr_node,goal_node))
+            % generate the sequence which raech the goal
             sequence = reconstruct(curr_node);
+            % time cost 
+            tcost = curr_node.tcost;
+            % depth for the goal node raeched
+            depth = curr_node.depth;
+            % space consumed for saving all opened node
+            space = length(open_stack);
+            % stop and diaplay the real time consumed 
+            toc
             return
-        
-        elseif(curr_node.depth < d)    
-            leftmoved = moveLeft(curr_node);
-            if(max(max(leftmoved.state ~= curr_node.state)) && ~ismember(getArray(leftmoved), visited,'rows'))
-                leftmoved.parent = curr_node;
-                leftmoved.depth = curr_node.depth + 1;
-                list_index = list_index + 1;
-                list(list_index) = leftmoved;
+        elseif(curr_node.depth<=limit)
+            % randomise the action order in order to get out of pointless loop 
+            rnd = randperm(4);
+            for i = 1:4
+                switch(rnd(i))
+                    case(1)
+                        % action for move the tile "0" left
+                        leftmoved = moveLeft(curr_node);
+                        % if the moved state is not equal to its parent state
+                        % detect the boundray of the puzzle
+                        if(testDiff(leftmoved,curr_node))
+                            % time consumed plus 1
+                           tc = tc + 1;
+                           leftmoved.tcost = tc;
+                           % parent node for sequence generate
+                           leftmoved.parent = curr_node;
+                           % depth + 1
+                           leftmoved.depth = curr_node.depth + 1;
+                           index = index + 1;
+                           % put the moved node into the back of queue
+                           open_stack(index,1) = leftmoved;
+                        end
+                        
+                    case(2)
+                        upmoved = moveUp(curr_node);
+                        if(testDiff(upmoved,curr_node))
+                            tc = tc + 1;
+                            upmoved.tcost = tc;
+                            upmoved.parent = curr_node;
+                            upmoved.depth = curr_node.depth + 1;
+                            index = index + 1;
+                            open_stack(index,1) = upmoved;
+                        end
+                        
+                    case(3)
+                        rightmoved = moveRight(curr_node);
+                        if(testDiff(rightmoved,curr_node))
+                            tc = tc + 1;
+                            rightmoved.tcost = tc;
+                           rightmoved.parent = curr_node;
+                           rightmoved.depth = curr_node.depth + 1;
+                           index = index + 1;
+                           open_stack(index,1) = rightmoved;
+                        end
+                    
+                    case(4)    
+                        downmoved = moveDown(curr_node);
+                        if(testDiff(downmoved,curr_node))
+                            tc = tc + 1;
+                            downmoved.tcost = tc;
+                           downmoved.parent = curr_node;
+                           downmoved.depth = curr_node.depth + 1;
+                           index = index + 1;
+                           open_stack(index,1) = downmoved;               
+                        end
+                end
             end
-
-            rightmoved = moveRight(curr_node);
-            if(max(max(rightmoved.state ~= curr_node.state)) && ~ismember(getArray(rightmoved), visited,'rows'))
-                rightmoved.parent = curr_node;
-                rightmoved.depth = curr_node.depth + 1;
-                list_index = list_index + 1;
-                list(list_index) = rightmoved;
-            end
-
-            downmoved = moveDown(curr_node);
-            if(max(max(downmoved.state ~= curr_node.state)) && ~ismember(getArray(downmoved), visited,'rows'))
-                downmoved.parent = curr_node;
-                downmoved.depth = curr_node.depth + 1;
-                list_index = list_index + 1;
-                list(list_index) = downmoved;
-            end
-            
-            upmoved = moveUp(curr_node);
-            if(max(max(upmoved.state ~= curr_node.state)) && ~ismember(getArray(upmoved), visited,'rows'))
-                upmoved.parent = curr_node;
-                upmoved.depth = curr_node.depth + 1;
-                list_index = list_index + 1;
-                list(list_index) = upmoved;
-            end
+        elseif(index == 0)
+            disp(['Solution not find at depth limit: ',int2str(limit)]);
         end
     end
 end
