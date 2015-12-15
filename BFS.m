@@ -18,7 +18,7 @@ function [tcost, sequence, depth, space] = BFS(initial_node,goal_node)
             % generate the sequence which raech the goal
             sequence = reconstruct(curr_node);
             % time cost 
-            tcost = tc;
+            tcost = curr_node.tcost;
             % depth for the goal node raeched
             depth = curr_node.depth;
             % space consumed for saving all opened node
