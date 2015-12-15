@@ -37,7 +37,7 @@ function [tcost, sequence, depth, space] = IDS(initial_node,goal_node,limit)
                         % if the moved state is not equal to its parent state
                         % detect the boundray of the puzzle
                         if(testDiff(leftmoved,curr_node))
-                            % time consumed plus 1
+                           % time consumed plus 1
                            tc = tc + 1;
                            leftmoved.tcost = tc;
                            % parent node for sequence generate

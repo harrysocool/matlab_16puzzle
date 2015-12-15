@@ -5,7 +5,7 @@ matrixgo = ones(4,4);
 % matrixgo(:,2) = [1,52,53,54];
 % matrixgo(4,4) = 0;
 matrixgo(4,:) = [52,53,54,1];
-matrixgo(1,2) = 0;
+matrixgo(1,1) = 0;
 init = node(matrixst);
 goal = node(matrixgo);
 
@@ -23,3 +23,7 @@ end
 find(solutionIndex == 1);
 %%
 [tcost,sequence,depth,space] = DFS(init,goal);
+%%
+[tcost,sequence,depth,space] = IDS(init,goal,8);
+%%
+[tcost,sequence,depth,space] = BFS(init,goal);
