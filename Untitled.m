@@ -22,4 +22,4 @@ for d = 24:24
 end
 find(solutionIndex == 1);
 %%
-[tcost,sequence,depth,space] = BFS(init,goal);
+[tcost,sequence,depth,space] = DFS(init,goal);
