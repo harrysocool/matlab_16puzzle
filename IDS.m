@@ -26,7 +26,7 @@ function [tcost, sequence, depth, space] = IDS(initial_node,goal_node,limit)
             % stop and diaplay the real time consumed 
             toc
             return
-        elseif(curr_node.depth<=limit)
+        elseif(curr_node.depth <= limit)
             % randomise the action order in order to get out of pointless loop 
             rnd = randperm(4);
             for i = 1:4
