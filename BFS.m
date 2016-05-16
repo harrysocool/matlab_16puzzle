@@ -1,7 +1,7 @@
 function [tcost, sequence, depth, space] = BFS(initial_node,goal_node)
     tic %start timer
     index = 1;
-    tc = 0;
+    tcost = 0;
     % put the initial node into the queue
     open_queue(index,1) = initial_node;
     
@@ -11,30 +11,36 @@ function [tcost, sequence, depth, space] = BFS(initial_node,goal_node)
         curr_node = open_queue(index,1);
         index = index + 1;
         % display for the number of how many node generated
-        disp(['Node Generated: ',int2str(tc)]);
+        disp(['Node Generated: ',int2str(tcost)]);
         
         % if the node state reach the goal state 
         if(~testDiff(curr_node,goal_node))
             % generate the sequence which raech the goal
             sequence = reconstruct(curr_node);
             % time cost 
-            tcost = curr_node.tcost;
+            tcost = tcost;
             % depth for the goal node raeched
             depth = curr_node.depth;
             % space consumed for saving all opened node
-            space = length(open_queue);
+            space = length(open_queue) - 1;
             % stop and diaplay the real time consumed 
             toc
             return
+        elseif(tcost>100000)
+            sequence = {'No Solution'};
+            tcost = 0;
+            depth = 0;
+            space = 0;
+            return
         else
-            % action for move the tile "0" left
+            % action for move the tile "55" left
             leftmoved = moveLeft(curr_node);
             % if the moved state is not equal to its parent state
             % detect the boundray of the puzzle
             if(testDiff(leftmoved,curr_node))
                 % time consumed plus 1
-               tc = tc + 1;
-               leftmoved.tcost = tc;
+               tcost = tcost + 1;
+               leftmoved.tcost = tcost;
                % parent node for sequence generate
                leftmoved.parent = curr_node;
                % depth + 1
@@ -45,8 +51,8 @@ function [tcost, sequence, depth, space] = BFS(initial_node,goal_node)
 
             upmoved = moveUp(curr_node);
             if(testDiff(upmoved,curr_node))
-                tc = tc + 1;
-                upmoved.tcost = tc;
+                tcost = tcost + 1;
+                upmoved.tcost = tcost;
                 upmoved.parent = curr_node;
                 upmoved.depth = curr_node.depth + 1;
                 open_queue(length(open_queue)+1,1) = upmoved;
@@ -54,8 +60,8 @@ function [tcost, sequence, depth, space] = BFS(initial_node,goal_node)
 
             rightmoved = moveRight(curr_node);
             if(testDiff(rightmoved,curr_node))
-                tc = tc + 1;
-                rightmoved.tcost = tc;
+                tcost = tcost + 1;
+                rightmoved.tcost = tcost;
                rightmoved.parent = curr_node;
                rightmoved.depth = curr_node.depth + 1;
                open_queue(length(open_queue)+1,1) = rightmoved;
@@ -63,8 +69,8 @@ function [tcost, sequence, depth, space] = BFS(initial_node,goal_node)
 
             downmoved = moveDown(curr_node);
             if(testDiff(downmoved,curr_node))
-                tc = tc + 1;
-                downmoved.tcost = tc;
+                tcost = tcost + 1;
+                downmoved.tcost = tcost;
                downmoved.parent = curr_node;
                downmoved.depth = curr_node.depth + 1;
                open_queue(length(open_queue)+1,1) = downmoved;               
